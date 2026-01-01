@@ -10,7 +10,7 @@ function clampNonNegative(n: number): number {
 
 export function CountdownTimer() {
   const target = useMemo(
-    () => DateTime.fromISO("2024-01-01T00:00:00", { zone: "America/New_York" }),
+    () => DateTime.fromISO("2026-01-01T00:00:00", { zone: "America/New_York" }),
     []
   );
 
@@ -40,7 +40,7 @@ export function CountdownTimer() {
   return (
     <div className="count-down-timer">
       {/* 전역 타이포(.font-h1) 그대로 사용 */}
-      <h1 className="font-h1">2024 Countdown</h1>
+      <h1 className="font-h1">2026 Countdown</h1>
 
       <div className="wrapper">
         <div className="times">

@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { usePopup } from "./usePopup";
 import type { LinkPopupData } from "./popupContext";
 import { KAKAO_TEMPLATE_ID } from "../values/value";
@@ -77,6 +77,8 @@ async function ensureKakaoReady(): Promise<KakaoLike | null> {
 export function Popup() {
   const { state, close } = usePopup();
   const [clipboardCopied, setClipboardCopied] = useState(false);
+  const [wechatQrOpen, setWechatQrOpen] = useState(false);
+  const [wechatQrDataUrl, setWechatQrDataUrl] = useState<string | null>(null);
 
   const isOpen = state.type !== "none";
   const type = state.type;
@@ -105,38 +107,45 @@ export function Popup() {
     return `${window.location.origin}/card/${linkData.cardId}`;
   }, [linkData]);
 
+  useEffect(() => {
+    if (type === "link") {
+      setClipboardCopied(false);
+      setWechatQrOpen(false);
+      setWechatQrDataUrl(null);
+    }
+  }, [type, shareUrl]);
+
   const kakaoShareOption = useMemo(() => {
     if (!linkData) return null;
+
     return {
-      requestUrl: window.location.origin,
+      requestUrl: shareUrl,
       templateId: KAKAO_TEMPLATE_ID,
       templateArgs: {
-        SENDER: linkData.sender ?? "",
-        CARD_ID: linkData.cardId,
-        RECEIVER: linkData.receiver ?? "",
+        sender: linkData.sender ?? "",
+        receiver: linkData.receiver ?? "",
       },
     };
-  }, [linkData]);
+  }, [linkData, shareUrl]);
 
   const runFn = useCallback((fn?: () => unknown) => {
     try {
       fn?.();
-    } catch {
-      // UI 안전성: 삼키고 close만 진행
-    }
+      // eslint-disable-next-line no-empty
+    } catch {}
   }, []);
 
   const onConfirm = useCallback(() => {
     if (type === "none") return;
     runFn(option?.confirm?.fn);
     close();
-  }, [type, option, close, runFn]);
+  }, [close, option?.confirm?.fn, runFn, type]);
 
   const onCancel = useCallback(() => {
     if (type === "none") return;
     runFn(option?.cancel?.fn);
     close();
-  }, [type, option, close, runFn]);
+  }, [close, option?.cancel?.fn, runFn, type]);
 
   const onCopyClipboard = useCallback(async () => {
     if (!shareUrl) return;
@@ -147,6 +156,48 @@ export function Popup() {
       setClipboardCopied(false);
     }
   }, [shareUrl]);
+
+  const onOpenWeChatQr = useCallback(async () => {
+    setWechatQrOpen(true);
+    await onCopyClipboard();
+  }, [onCopyClipboard]);
+
+  const onCloseWeChatQr = useCallback(() => {
+    setWechatQrOpen(false);
+    setWechatQrDataUrl(null);
+  }, []);
+
+  const onOpenWeChatWeb = useCallback(() => {
+    window.open("https://weixin.qq.com/", "_blank", "noopener,noreferrer");
+  }, []);
+
+  useEffect(() => {
+    let canceled = false;
+
+    async function run() {
+      if (type !== "link") return;
+      if (!wechatQrOpen) return;
+      if (!shareUrl) return;
+
+      try {
+        const mod = await import("qrcode");
+        const dataUrl = await mod.toDataURL(shareUrl, {
+          margin: 1,
+          width: 220,
+          errorCorrectionLevel: "M",
+        });
+
+        if (!canceled) setWechatQrDataUrl(dataUrl);
+      } catch {
+        if (!canceled) setWechatQrDataUrl(null);
+      }
+    }
+
+    run();
+    return () => {
+      canceled = true;
+    };
+  }, [shareUrl, type, wechatQrOpen]);
 
   const onShareKakao = useCallback(async () => {
     if (!kakaoShareOption) return;
@@ -162,7 +213,7 @@ export function Popup() {
   return (
     <>
       {type !== "link" ? (
-        <div className="popup-container">
+        <div className={`popup-container ${type}`}>
           <p
             className="font-desc"
             dangerouslySetInnerHTML={{ __html: newlineToBrHtml(content ?? "") }}
@@ -190,29 +241,79 @@ export function Popup() {
         <div className="popup-container link">
           <p className="font-desc">받는 분께 링크를 공유해주세요!</p>
 
-          <div className="button-wrapper">
-            <button
-              onClick={onCopyClipboard}
-              className="button-share"
-              type="button"
-            >
-              <div className="button-icon clipboard" />
-              <span>{clipboardCopied ? "복사 완료!" : "링크 복사"}</span>
-            </button>
+          {wechatQrOpen ? (
+            <div className="wechat-qr">
+              <div className="qr-image">
+                {wechatQrDataUrl ? (
+                  <img src={wechatQrDataUrl} alt="WeChat QR" />
+                ) : (
+                  <span className="font-desc">Generating QR…</span>
+                )}
+              </div>
 
-            <button
-              onClick={onShareKakao}
-              className="button-share"
-              type="button"
-            >
-              <div className="button-icon kakaotalk" />
-              <span>카카오톡 공유</span>
-            </button>
-          </div>
+              <p className="font-desc qr-desc">
+                Open WeChat, scan this QR code, then share the link.
+              </p>
+
+              <div className="qr-actions">
+                <button
+                  onClick={onCopyClipboard}
+                  className="qr-back"
+                  type="button"
+                >
+                  Copy link
+                </button>
+
+                <button
+                  onClick={onOpenWeChatWeb}
+                  className="qr-back"
+                  type="button"
+                >
+                  Open WeChat
+                </button>
+              </div>
+
+              <button
+                onClick={onCloseWeChatQr}
+                className="qr-back"
+                type="button"
+              >
+                돌아가기
+              </button>
+            </div>
+          ) : (
+            <div className="button-wrapper">
+              <button
+                onClick={onCopyClipboard}
+                className="button-share"
+                type="button"
+              >
+                <div className="button-icon clipboard" />
+                <span>{clipboardCopied ? "복사 완료!" : "링크 복사"}</span>
+              </button>
+
+              <button
+                onClick={onShareKakao}
+                className="button-share"
+                type="button"
+              >
+                <div className="button-icon kakaotalk" />
+                <span>카카오톡 공유</span>
+              </button>
+
+              <button
+                onClick={onOpenWeChatQr}
+                className="button-share"
+                type="button"
+              >
+                <div className="button-icon wechat" />
+                <span>위챗 공유</span>
+              </button>
+            </div>
+          )}
         </div>
       )}
 
-      {/* dimmed 클릭 동작: confirm이면 cancel, 나머지는 close */}
       <div
         className="dimmed"
         onClick={type === "confirm" ? onCancel : close}

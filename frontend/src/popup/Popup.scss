@@ -23,13 +23,17 @@
   }
 
   &.link {
-    padding: 40px 30px 180px;
+    // ✅ 링크 팝업은 "내용 영역 + 하단 버튼 영역"을 세로로 분리해서 안정화
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
 
-    & .button-wrapper {
-      bottom: 40px;
-      padding: 0 50px;
-      justify-content: space-around;
-    }
+    // 기존엔 absolute 버튼 때문에 padding-bottom을 크게 잡았는데,
+    // 이제 wrapper가 flow로 내려가니 과한 padding-bottom 제거
+    padding: 40px 30px 30px;
+    min-height: 340px; // QR 포함 안정적으로 (필요하면 조절)
+    gap: 18px;
   }
 }
 
@@ -103,6 +107,76 @@
       &.kakaotalk {
         background-image: url("/assets/ico-kakao.png");
       }
+
+      &.instagram {
+        background-image: url("/assets/ico-instagram.png");
+      }
+
+      &.wechat {
+        background-image: url("/assets/ico-wechat.png");
+      }
+    }
+  }
+}
+
+/* -----------------------------
+   ✅ 링크 팝업(공유) 레이아웃 안정화
+------------------------------ */
+
+.popup-container.link {
+  // 3개 공유 버튼 영역은 absolute 쓰지 말고 아래로 자연스럽게 내려가게
+  .button-wrapper {
+    position: static; // ✅ absolute 제거
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    gap: 12px;
+    padding: 0 20px;
+    margin-top: auto; // ✅ 남는 공간 있으면 아래로 붙음
+  }
+
+  // QR 화면
+  .wechat-qr {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+
+    .qr-image {
+      width: 220px;
+      height: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid $color-black;
+      border-radius: 12px;
+      overflow: hidden;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: block;
+      }
+    }
+
+    .qr-desc {
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    // "Copy link" + "Open WeChat" 두 버튼 정렬
+    .qr-actions {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    // 돌아가기/공통 버튼이 꽉 차도록
+    .qr-back {
+      width: 100%;
     }
   }
 }
@@ -114,16 +188,21 @@
     padding: 20px 21px 75px;
 
     &.link {
-      padding: 40px 30px 180px;
+      padding: 30px 20px 20px;
+      min-height: 320px;
+      gap: 14px;
+    }
+  }
 
-      & .button-wrapper {
-        bottom: 40px;
+  .popup-container.link {
+    .button-wrapper {
+      padding: 0 10px;
+      gap: 10px;
+    }
 
-        .cancel-button,
-        .confirm-button {
-          height: 55px;
-          font-size: 14px;
-        }
+    .wechat-qr {
+      .qr-actions {
+        grid-template-columns: 1fr; // 모바일에서는 세로로 쌓기(원하면 2열 유지 가능)
       }
     }
   }
