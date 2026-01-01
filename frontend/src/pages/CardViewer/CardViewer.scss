@@ -125,7 +125,6 @@
     height: 600px;
     background-repeat: no-repeat;
     background-size: auto 100%;
-    background-position: center center; // ✅ 이거 추가 (핵심)
     position: relative;
     pointer-events: none;
     transition: height 0.5s 1s ease-in-out;
@@ -226,9 +225,7 @@
     }
 
     .envelop {
-      width: min(400px, 100vw);
-      height: min(400px, 100vw);
-
+      width: 100%;
       position: fixed;
       top: 10vh;
       left: 50%;
@@ -260,14 +257,11 @@
 
     .preview {
       height: 400px;
-      background-position: center center; /* ✅ 혹시 배경 정렬도 흔들리면 이게 잡아줌 */
     }
 
-    /* ✅ flip 카드도 폭을 100%가 아니라 '카드 폭'으로 */
     .flip-card {
-      width: min(400px, 100vw);
+      width: 100%;
       height: 400px;
-      margin: 0 auto;
       perspective: 100vw;
     }
 

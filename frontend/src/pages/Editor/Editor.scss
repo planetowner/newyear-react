@@ -43,7 +43,6 @@
   height: 600px;
   background-repeat: no-repeat;
   background-size: auto 100%;
-  background-position: center center;
   position: relative;
   pointer-events: none;
   transition: height 0.5s 1s ease-in-out;
@@ -133,13 +132,13 @@
 .text-editor {
   position: absolute;
   top: 90px;
-  left: calc(50% - 150px);
+  left: 50%;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
   color: $color-white;
   z-index: 50;
-  transform: translateZ(1px);
+  transform: translateX(-50%) translateZ(1px);
   pointer-events: all;
 
   & > * {
@@ -213,21 +212,18 @@
   }
 
   .preview-container {
+    padding-bottom: 180px;
     position: fixed;
     top: 100px;
-
-    left: 50%;
-    transform: translateX(-50%);
-    width: min(400px, 100vw);
   }
 
   .preview {
-    background-position: center center;
+    height: 400px;
   }
 
   .flip-card {
-    width: min(400px, 100vw);
-    margin: 0 auto;
+    height: 400px;
+    perspective: 100vw;
   }
 
   .editor-controls {
@@ -250,8 +246,6 @@
 
   .text-editor {
     top: 50px;
-    left: 50%;
-    transform: translateX(-50%) translateZ(1px);
 
     .letter-textbox > textarea {
       height: 200px;
