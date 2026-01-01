@@ -224,14 +224,12 @@
       font-size: 25px;
     }
 
-    .envelop,
-    .envelop-opening {
+    .envelop {
       width: min(400px, 100vw);
       height: min(400px, 100vw);
 
       position: fixed;
       top: 10vh;
-
       left: 50%;
       transform: translateX(-50%);
     }
@@ -261,11 +259,14 @@
 
     .preview {
       height: 400px;
+      background-position: center center; /* ✅ 혹시 배경 정렬도 흔들리면 이게 잡아줌 */
     }
 
+    /* ✅ flip 카드도 폭을 100%가 아니라 '카드 폭'으로 */
     .flip-card {
-      width: 100%;
+      width: min(400px, 100vw);
       height: 400px;
+      margin: 0 auto;
       perspective: 100vw;
     }
 
