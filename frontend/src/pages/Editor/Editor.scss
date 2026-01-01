@@ -132,13 +132,13 @@
 .text-editor {
   position: absolute;
   top: 90px;
-  left: calc(50% - 150px);
+  left: 50%;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
   color: $color-white;
   z-index: 50;
-  transform: translateZ(1px);
+  transform: translateX(-50%) translateZ(1px);
   pointer-events: all;
 
   & > * {

@@ -224,10 +224,14 @@
       font-size: 25px;
     }
 
-    .envelop {
-      width: 100%;
+    .envelop,
+    .envelop-opening {
+      width: min(400px, 100vw);
+      height: min(400px, 100vw);
+
       position: fixed;
       top: 10vh;
+
       left: 50%;
       transform: translateX(-50%);
     }
