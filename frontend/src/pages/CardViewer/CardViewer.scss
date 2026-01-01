@@ -228,6 +228,8 @@
       width: 100%;
       position: fixed;
       top: 10vh;
+      left: 50%;
+      transform: translateX(-50%);
     }
 
     .envelop:hover {
