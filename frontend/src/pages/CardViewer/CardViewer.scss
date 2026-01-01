@@ -125,6 +125,7 @@
     height: 600px;
     background-repeat: no-repeat;
     background-size: auto 100%;
+    background-position: center center; // ✅ 이거 추가 (핵심)
     position: relative;
     pointer-events: none;
     transition: height 0.5s 1s ease-in-out;
