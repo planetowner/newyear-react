@@ -1,0 +1,12 @@
+@use "sass:map";
+
+// Breakpoints
+$breakpoint-mobile: 335px;
+$breakpoint-tablet: 758px;
+$breakpoint-desktop: 1024px;
+
+// Colors
+$color-primary: #ff5a28;
+$color-sub: #ff4317;
+$color-black: #000000;
+$color-white: #ffffff;

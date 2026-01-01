@@ -1,0 +1,285 @@
+@use "../../styles/variables" as *;
+@use "../../styles/mixins" as *;
+
+.card-viewer-page {
+  .title {
+    padding: 0 20px 0 15px;
+    line-height: 1;
+    color: $color-white;
+  }
+
+  .font-h1-kr {
+    margin: 0 0 -10px 0;
+  }
+
+  .card-container {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding-top: 50px;
+  }
+
+  .preview {
+    height: 600px;
+  }
+
+  .title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: fixed;
+    top: 50px;
+
+    h3 {
+      margin: 0 0 -10px 0;
+    }
+
+    &.white {
+      color: $color-white;
+    }
+  }
+
+  .envelop {
+    width: 400px;
+    height: 400px;
+    background: url("/assets/envelop/envelop-close.svg") no-repeat center center;
+    background-size: auto 100%;
+    margin-bottom: 100px;
+    position: relative;
+
+    p {
+      display: none;
+      font-weight: 400;
+      position: absolute;
+      bottom: -40px;
+      left: calc(50% - 155px);
+    }
+  }
+
+  .envelop-opening {
+    width: 400px;
+    height: 400px;
+    margin-bottom: 100px;
+    position: relative;
+  }
+
+  .envelop:hover {
+    -webkit-animation-name: shakeAnimation;
+    -webkit-animation-duration: 0.4s;
+    -webkit-animation-iteration-count: 1;
+    -webkit-animation-timing-function: ease-in-out;
+    -webkit-animation-fill-mode: forwards;
+
+    animation-name: shakeAnimation;
+    animation-duration: 0.4s;
+    animation-iteration-count: 1;
+    animation-timing-function: ease-in-out;
+    animation-fill-mode: forwards;
+
+    cursor: pointer;
+
+    p {
+      display: block;
+    }
+  }
+
+  @keyframes shakeAnimation {
+    0% {
+      -webkit-transform: rotate(0deg) scale(1) skew(0deg);
+    }
+    25% {
+      -webkit-transform: rotate(3deg) scale(1.02) skew(0deg);
+    }
+    50% {
+      -webkit-transform: rotate(0deg) scale(1.04) skew(0deg);
+    }
+    75% {
+      -webkit-transform: rotate(3deg) scale(1.06) skew(0deg);
+    }
+    100% {
+      -webkit-transform: rotate(0deg) scale(1.08) skew(0deg);
+    }
+  }
+
+  .font-desc2 {
+    position: fixed;
+    bottom: 120px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .preview-container {
+    padding-bottom: 120px;
+    width: 100%;
+    max-width: 1000px;
+    min-width: 0;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  .preview {
+    height: 600px;
+    background-repeat: no-repeat;
+    background-size: auto 100%;
+    position: relative;
+    pointer-events: none;
+    transition: height 0.5s 1s ease-in-out;
+  }
+
+  .selected-motion {
+    -webkit-animation-name: cssAnimation;
+    -webkit-animation-duration: 0.4s;
+    -webkit-animation-iteration-count: 1;
+    -webkit-animation-timing-function: ease-in-out;
+    -webkit-animation-fill-mode: forwards;
+
+    animation-name: cssAnimation;
+    animation-duration: 0.4s;
+    animation-iteration-count: 1;
+    animation-timing-function: ease-in-out;
+    animation-fill-mode: forwards;
+  }
+
+  @keyframes cssAnimation {
+    0% {
+      -webkit-transform: rotate(0deg) scale(1) skew(0deg);
+    }
+    50% {
+      -webkit-transform: rotate(5deg) scale(1) skew(0deg);
+    }
+    100% {
+      -webkit-transform: rotate(0deg) scale(1) skew(0deg);
+    }
+  }
+
+  /* flip card */
+  .flip-card {
+    background-color: transparent;
+    height: 600px;
+    perspective: 1000px;
+  }
+
+  .flip-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 1s;
+    transition-delay: 0.3s;
+    transform-style: preserve-3d;
+  }
+
+  .flip-card.flipped .flip-card-inner {
+    transform: rotateY(180deg) scale(1);
+  }
+
+  .flip-card.active-preview .flip-card-inner {
+    transform: rotateY(180deg) scale(1);
+
+    .preview {
+      height: 800px;
+    }
+  }
+
+  .flip-card-front,
+  .flip-card-back {
+    position: absolute;
+    min-width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .flip-card-front {
+    color: black;
+  }
+
+  .flip-card-back {
+    color: black;
+    height: 600px;
+    background-repeat: no-repeat;
+    background-size: auto 100%;
+    transform: rotateY(180deg);
+  }
+
+  /* Angular :host ::ng-deep 대체 */
+  .active-preview .text-preview {
+    opacity: 1;
+  }
+
+  @include mobile {
+    .font-h1-kr {
+      margin: 0 0 -4px 0;
+      font-size: 20px;
+    }
+
+    .font-h1 {
+      font-size: 25px;
+    }
+
+    .envelop {
+      width: 100%;
+      position: fixed;
+      top: 10vh;
+    }
+
+    .envelop:hover {
+      animation-name: none;
+      -webkit-animation-name: none;
+
+      p {
+        display: none;
+      }
+    }
+
+    .title {
+      top: 20px;
+
+      .font-h1-kr {
+        margin: 0 0 -10px 0;
+      }
+    }
+
+    .preview-container {
+      width: 100%;
+      padding: 0 15px;
+      box-sizing: border-box;
+    }
+
+    .preview {
+      height: 400px;
+    }
+
+    .flip-card {
+      width: 100%;
+      height: 400px;
+      perspective: 100vw;
+    }
+
+    .flip-card.active-preview .flip-card-inner {
+      transform: rotateY(180deg) scale(1);
+
+      .preview {
+        height: 500px;
+      }
+    }
+
+    .flip-card-back {
+      width: 100%;
+      height: 400px;
+    }
+
+    .font-desc2 {
+      bottom: 70px;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+  }
+}

@@ -1,0 +1,50 @@
+@use "../../styles/mixins" as *;
+
+/* HIDE RADIO */
+.card-shape-options [type="radio"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* 클릭 가능 */
+.card-shape-options [type="radio"] + div {
+  cursor: pointer;
+}
+
+/* ✅ 클래스명 충돌 방지: icon-checked → shape-icon-checked */
+.card-shape-options .shape-icon-checked {
+  background: url("/assets/ui/check.svg") no-repeat center center;
+  width: 40px;
+  height: 40px;
+  display: none;
+  background-size: 100%;
+}
+
+/* CHECKED STYLES (원본 값 그대로) */
+.card-shape-options [type="radio"]:checked + div > .shape-icon-checked {
+  display: block;
+  position: absolute;
+  top: 35px;
+  right: 30px;
+}
+
+.card-shape-options .card-shape-preview {
+  height: 110px;
+  width: 100px;
+  display: inline-block;
+  position: relative;
+}
+
+@include mobile {
+  .card-shape-options .card-shape-preview {
+    height: 70px;
+    width: 60px;
+  }
+
+  .card-shape-options [type="radio"]:checked + div > .shape-icon-checked {
+    top: 20px;
+    right: -2px;
+  }
+}

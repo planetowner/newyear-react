@@ -1,0 +1,131 @@
+@use "sass:math";
+@use "../../styles/mixins" as *;
+
+$SNOWDROPS_LENGTH: 100;
+
+.g-snows {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow: hidden;
+  background-color: navy;
+  background-image: linear-gradient(to bottom, navy, darkgray);
+  z-index: -1;
+  pointer-events: none;
+}
+
+.g-snows > li {
+  // NOTE: Opacity zero is required due to appearance of snow.
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  border-radius: 100%;
+  background-color: #ffffff;
+  background-repeat: no-repeat;
+  background-size: 100% auto;
+  animation-name: snow-drop;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+  will-change: transform, opacity;
+  transform: translate3d(0, 0, 0);
+
+  // Bases of random snows effect
+  $snow-size-base: 30;
+  $browser-buffer: 50;
+  $left-position: 100 + $browser-buffer;
+  $animate-speed-base: 10000;
+  $minimum-falling-speed: 5000;
+  $animate-delay-base: 5000;
+  $blur-base: 5;
+
+  @for $i from 1 through $SNOWDROPS_LENGTH {
+    $size: abs(math.random($snow-size-base) - math.random($snow-size-base)) +
+      0px;
+
+    &:nth-child(#{$i}) {
+      left: abs(math.random($left-position) - math.random($left-position)) + 0%;
+      width: $size;
+      height: $size;
+
+      animation-duration: abs(
+          math.random($animate-speed-base) - math.random($animate-speed-base)
+        ) +
+        $minimum-falling-speed +
+        0ms;
+
+      animation-delay: abs(math.random($animate-delay-base)) + 0ms;
+
+      filter: blur(
+        abs(math.random($blur-base) - math.random($blur-base)) + 0px
+      );
+    }
+  }
+}
+
+@keyframes snow-drop {
+  $window-height-threshold: 1.5;
+
+  0% {
+    opacity: 0.5;
+    transform: translate3d(0, 0, 0);
+  }
+
+  10% {
+    transform: translate3d(15px, calc(100px / #{$window-height-threshold}), 0);
+  }
+
+  20% {
+    transform: translate3d(20px, calc(200px / #{$window-height-threshold}), 0);
+  }
+
+  25% {
+    transform: translate(0, calc(250px / #{$window-height-threshold}));
+    opacity: 0.75;
+  }
+
+  30% {
+    transform: translate3d(15px, calc(300px / #{$window-height-threshold}), 0);
+  }
+
+  40% {
+    transform: translate3d(0, calc(400px / #{$window-height-threshold}), 0);
+  }
+
+  50% {
+    opacity: 1;
+    transform: translate3d(-15px, calc(500px / #{$window-height-threshold}), 0);
+  }
+
+  60% {
+    transform: translate3d(-20px, calc(600px / #{$window-height-threshold}), 0);
+  }
+
+  70% {
+    transform: translate3d(-15px, calc(700px / #{$window-height-threshold}), 0);
+  }
+
+  75% {
+    opacity: 0.5;
+    transform: translate3d(-15px, calc(750px / #{$window-height-threshold}), 0);
+  }
+
+  80% {
+    transform: translate3d(0, calc(800px / #{$window-height-threshold}), 0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(0, calc(1000px / #{$window-height-threshold}), 0);
+  }
+}
+
+@include mobile {
+  .g-snows > li:nth-child(n + 51) {
+    display: none; // Hide snowflakes from the 51st onwards
+  }
+}

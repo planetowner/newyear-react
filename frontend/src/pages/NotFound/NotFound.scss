@@ -1,0 +1,42 @@
+@use "../../styles/variables" as *;
+@use "../../styles/mixins" as *;
+
+div.not-found-container {
+  color: white;
+  position: fixed;
+  height: 100vh;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+  .font-404 {
+    font-size: 80px;
+    font-weight: bold;
+    margin: 0;
+  }
+
+  .font-desc {
+    margin-top: 10px;
+  }
+
+  a {
+    margin-top: 40px;
+  }
+}
+
+@include mobile {
+  div.not-found-container .font-404 {
+    font-size: 50px;
+  }
+
+  a .button-default {
+    margin-top: 20px;
+    border-radius: 16px;
+    margin-bottom: 60px;
+  }
+}

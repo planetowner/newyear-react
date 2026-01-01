@@ -1,0 +1,130 @@
+@use "../styles/variables" as *;
+@use "../styles/mixins" as *;
+
+.popup-container {
+  z-index: 1000;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: $color-white;
+  border: 1px solid $color-black;
+  min-width: 400px;
+  min-height: 200px;
+  padding: 30px 30px 88px 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  border-radius: 16px;
+
+  .font-desc {
+    font-weight: 400;
+  }
+
+  &.link {
+    padding: 40px 30px 180px;
+
+    & .button-wrapper {
+      bottom: 40px;
+      padding: 0 50px;
+      justify-content: space-around;
+    }
+  }
+}
+
+.dimmed {
+  z-index: 100;
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  background-color: rgba($color: $color-black, $alpha: 0.5);
+}
+
+.button-wrapper {
+  position: absolute;
+  left: 0px;
+  bottom: 0px;
+  width: 100%;
+  display: flex;
+
+  button {
+    cursor: pointer;
+    flex: 1;
+  }
+
+  .cancel-button,
+  .confirm-button {
+    border: none;
+    border-top: 1px solid $color-black;
+    background-color: transparent;
+    padding: 0 20px;
+    height: 60px;
+    font-weight: 500;
+    font-size: 15px;
+    color: $color-black;
+    border-radius: 0;
+  }
+
+  .cancel-button {
+    border-right: 1px solid $color-black;
+  }
+
+  .button-share {
+    border: none;
+    width: 120px;
+    overflow: visible;
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+
+    span {
+      font-weight: 500;
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    div.button-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 100%;
+      background-color: $color-black;
+      background-position: center center;
+      background-size: 35px 35px;
+      background-repeat: no-repeat;
+
+      &.clipboard {
+        background-image: url("/assets/ico-link.png");
+      }
+
+      &.kakaotalk {
+        background-image: url("/assets/ico-kakao.png");
+      }
+    }
+  }
+}
+
+@include mobile {
+  .popup-container {
+    min-width: 80vw;
+    min-height: 45vw;
+    padding: 20px 21px 75px;
+
+    &.link {
+      padding: 40px 30px 180px;
+
+      & .button-wrapper {
+        bottom: 40px;
+
+        .cancel-button,
+        .confirm-button {
+          height: 55px;
+          font-size: 14px;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,16 @@
+.svg-container {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  z-index: 0;
+}
+
+.svg-container object {
+  pointer-events: none;
+  position: relative;
+  z-index: 0;
+  display: block;
+}

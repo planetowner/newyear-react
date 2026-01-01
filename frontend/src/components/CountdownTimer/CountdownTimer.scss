@@ -1,0 +1,55 @@
+.count-down-timer {
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
+    rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
+    rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+
+  text-align: center;
+  max-width: 400px;
+  margin: 20px auto;
+  border-radius: 6px;
+  padding: 20px 30px;
+
+  /* 전역 .font-h1은 margin:0이라 제목/숫자 간격을 여기서 조절 */
+  > h1 {
+    font-size: 35px; /* 제목은 숫자보다 작게 */
+    margin-bottom: 10px;
+    color: #ff5a28;
+  }
+
+  .wrapper {
+    .description,
+    .times {
+      display: grid;
+      grid-template-columns: repeat(4, calc(25% - 8px));
+      grid-column-gap: 10px;
+    }
+
+    .description {
+      margin-bottom: 5px;
+
+      > p {
+        margin: 0;
+        font-size: 14px;
+      }
+    }
+
+    .times {
+      /* 숫자 p들(.font-h1) */
+      p {
+        /* 전역 .font-h1 폰트/italic/weight는 유지되고,
+           여기서는 레이아웃만 만짐 */
+        line-height: 1;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 430px) {
+  .count-down-timer {
+    margin: 20px;
+
+    > h1 {
+      font-size: 22px;
+    }
+  }
+}
