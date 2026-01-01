@@ -1,13 +1,16 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { usePopup } from "./usePopup";
 import type { LinkPopupData } from "./popupContext";
-import { KAKAO_TEMPLATE_ID } from "../values/value";
 import "./Popup.scss";
 
 type KakaoLike = {
   isInitialized: () => boolean;
   init: (key: string) => void;
-  Link: { sendScrap: (opt: unknown) => void };
+  Link: {
+    // scrap은 SPA/OG 환경에서 실패하는 경우가 많아서 기본 템플릿 공유(sendDefault)로 전환
+    sendScrap?: (opt: unknown) => void;
+    sendDefault: (opt: unknown) => void;
+  };
 };
 
 declare global {
@@ -16,7 +19,7 @@ declare global {
   }
 }
 
-const KAKAO_JS_KEY = import.meta.env.VITE_KAKAO_JS_KEY;
+const KAKAO_JS_KEY = import.meta.env.VITE_KAKAO_JS_KEY as string | undefined;
 const KAKAO_SDK_URL = "https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js";
 
 function newlineToBrHtml(value: string) {
@@ -29,14 +32,9 @@ function loadScriptOnce(src: string): Promise<void> {
       `script[src="${src}"]`
     );
     if (existed) {
-      existed.addEventListener("load", () => resolve(), { once: true });
-      existed.addEventListener(
-        "error",
-        () => reject(new Error(`Failed to load ${src}`)),
-        {
-          once: true,
-        }
-      );
+      // 이미 달려있는 script가 "load"를 이미 끝냈을 수도 있음 → readyState 체크
+      // (브라우저별로 다르니, 그냥 resolve 시도 한번)
+      resolve();
       return;
     }
 
@@ -47,9 +45,7 @@ function loadScriptOnce(src: string): Promise<void> {
     script.addEventListener(
       "error",
       () => reject(new Error(`Failed to load ${src}`)),
-      {
-        once: true,
-      }
+      { once: true }
     );
     document.head.appendChild(script);
   });
@@ -102,6 +98,7 @@ export function Popup() {
     };
   }, [type, option]);
 
+  // ✅ 공유 URL은 "프론트 도메인 + /card/{id}"가 정답
   const shareUrl = useMemo(() => {
     if (!linkData?.cardId) return "";
     return `${window.location.origin}/card/${linkData.cardId}`;
@@ -114,19 +111,6 @@ export function Popup() {
       setWechatQrDataUrl(null);
     }
   }, [type, shareUrl]);
-
-  const kakaoShareOption = useMemo(() => {
-    if (!linkData) return null;
-
-    return {
-      requestUrl: shareUrl,
-      templateId: KAKAO_TEMPLATE_ID,
-      templateArgs: {
-        sender: linkData.sender ?? "",
-        receiver: linkData.receiver ?? "",
-      },
-    };
-  }, [linkData, shareUrl]);
 
   const runFn = useCallback((fn?: () => unknown) => {
     try {
@@ -199,14 +183,52 @@ export function Popup() {
     };
   }, [shareUrl, type, wechatQrOpen]);
 
+  /**
+   * ✅ 카카오 공유: sendScrap 대신 sendDefault 사용
+   * - sendScrap은 "페이지 스크랩"이라 OG/크롤링/SPA 404에 취약
+   * - sendDefault는 우리가 넣는 link/webUrl로 공유 가능
+   */
   const onShareKakao = useCallback(async () => {
-    if (!kakaoShareOption) return;
+    if (!shareUrl || !linkData) return;
 
     const Kakao = await ensureKakaoReady();
-    if (!Kakao) return;
+    if (!Kakao) {
+      // Kakao SDK가 로딩 안 됐으면 링크 복사라도
+      await onCopyClipboard();
+      return;
+    }
 
-    Kakao.Link.sendScrap(kakaoShareOption);
-  }, [kakaoShareOption]);
+    try {
+      Kakao.Link.sendDefault({
+        objectType: "feed",
+        content: {
+          title: `${linkData.sender ?? ""}님의 새해 카드`,
+          description: `${
+            linkData.receiver ?? ""
+          }님께 도착한 새해 카드예요. 눌러서 확인해 주세요!`,
+          // ✅ 여기 이미지는 "https://로 접근 가능한" 고정 이미지 추천
+          // (없으면 임시로 기본 로고/썸네일 하나 만들어 public에 넣는 게 좋음)
+          imageUrl: `${window.location.origin}/og-card.png`,
+          link: {
+            mobileWebUrl: shareUrl,
+            webUrl: shareUrl,
+          },
+        },
+        buttons: [
+          {
+            title: "카드 열기",
+            link: {
+              mobileWebUrl: shareUrl,
+              webUrl: shareUrl,
+            },
+          },
+        ],
+      });
+    } catch {
+      // 카카오 공유가 실패하면 최소한 링크라도 복사
+      await onCopyClipboard();
+    }
+  }, [shareUrl, linkData, onCopyClipboard]);
 
   if (!isOpen) return null;
 
